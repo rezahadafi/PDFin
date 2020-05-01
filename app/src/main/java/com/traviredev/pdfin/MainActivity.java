@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout.LayoutParams layoutParams;
     ArrayList<String> arr;
     String[] valuesarr;
+    String test;
 
     public static String DEST = "results/images/multiple_images.pdf";
 
