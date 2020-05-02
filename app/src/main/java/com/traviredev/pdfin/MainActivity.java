@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     private Button button_gallery;
     private Button button_rexport;
-    private ImageView imageView;
 
     public static final int REQUEST_IMAGE = 100;
     public static final int REQUEST_PERMISSION = 200;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> arr;
     String[] valuesarr;
 
-    public static String DEST = "results/images/multiple_images.pdf";
+    public static String DEST = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +90,10 @@ public class MainActivity extends AppCompatActivity {
         button_rexport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File storageDir = getExternalFilesDir("export/");
                 File image = null;
                 try {
-                    image = File.createTempFile("tetst", ".pdf", storageDir);
+                    image = File.createTempFile("pdfinexport", ".pdf", storageDir);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -115,8 +114,6 @@ public class MainActivity extends AppCompatActivity {
 
         Document document = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
-        //Rotate event = new Rotate();
-        //writer.setPageEvent(event);
         document.open();
         for (String image : valuesarr) {
 
@@ -141,9 +138,7 @@ public class MainActivity extends AppCompatActivity {
             document.newPage();
             document.add(img);
         }
-
         document.close();
-
     }
 
     public void pickImage() {
@@ -189,11 +184,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
-                Log.d("pathimage",imageFilePath);
+                //Log.d("pathimage",imageFilePath);
                 arr.add(imageFilePath);
                 valuesarr=new String[arr.size()];
                 valuesarr = arr.toArray(valuesarr);
-                //imageView.setImageURI(Uri.parse(imageFilePath));
+
             }
             else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "You cancelled the operation", Toast.LENGTH_SHORT).show();
@@ -206,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             String picturePath = getPath( this.getApplicationContext( ),data.getData() );
-            Log.d("pathimage",picturePath);
+            //Log.d("pathimage",picturePath);
             arr.add(picturePath);
             valuesarr=new String[arr.size()];
             valuesarr = arr.toArray(valuesarr);
@@ -219,14 +214,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("size",String.valueOf(arr.size()));
         for (int i = 0; i < valuesarr.length; i++) {
 
-
             layoutParams.setMargins(20, 20, 20, 20);
             layoutParams.gravity = Gravity.CENTER;
             ImageView imageView = new ImageView(this);
             //imageView.setImageURI();
             //imageView.setOnClickListener(documentImageListener);
             imageView.setLayoutParams(layoutParams);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setImageURI(Uri.parse(valuesarr[i].toString()));
             layout.addView(imageView);
 
@@ -262,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         imageFilePath = image.getPath();
-
         return image;
     }
 
