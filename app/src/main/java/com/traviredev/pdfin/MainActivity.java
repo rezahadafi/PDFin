@@ -30,6 +30,10 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfNumber;
+import com.itextpdf.text.pdf.PdfPage;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import androidx.annotation.NonNull;
@@ -53,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout.LayoutParams layoutParams;
     ArrayList<String> arr;
     String[] valuesarr;
-    String test;
 
     public static String DEST = "results/images/multiple_images.pdf";
 
@@ -61,18 +64,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_menu);
-
         layout = (LinearLayout) findViewById(R.id.img_container);
-
         arr=new ArrayList<String>();
-
         button = findViewById(R.id.button_capture);
         button_gallery=findViewById(R.id.button_gallery);
         button_rexport=findViewById(R.id.button_export);
-        //imageView = findViewById(R.id.imageView);
-
-
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -92,12 +88,9 @@ public class MainActivity extends AppCompatActivity {
                 openCameraIntent();
             }
         });
-
         button_rexport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //File file = new File(DEST);
-                //file.getParentFile().mkdirs();
                 File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 File image = null;
                 try {
@@ -107,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 DEST = image.getPath();
                 try {
-                    createPdf(DEST);
+                    createPdf(DEST,"Potrait");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (DocumentException e) {
@@ -117,22 +110,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void createPdf(String dest) throws IOException, DocumentException {
-        //Image img = Image.getInstance(valuesarr[0]);
-        Document document = new Document(PageSize.A4, 0f, 0f, 0f, 0f);
-        PdfWriter.getInstance(document, new FileOutputStream(dest));
+
+    public void createPdf(String dest,String orientation) throws IOException, DocumentException {
+
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
+        //Rotate event = new Rotate();
+        //writer.setPageEvent(event);
         document.open();
         for (String image : valuesarr) {
+
             Image img = Image.getInstance(image);
-            //document.setPageSize(img);
-            document.newPage();
-            img.setAbsolutePosition(0, 0);
+            float img_width=img.getWidth();
+            float img_height=img.getHeight();
+
+            if(img_height>img_width){
+                //potrait
+                //Log.d("orientation","potrait");
+                document.setPageSize(PageSize.A4);
+            }else{
+                //landscape
+                //Log.d("orientation","landscape");
+                document.setPageSize(PageSize.A4.rotate());
+            }
+            document.setMargins(0f, 0f, 0f, 0f);
             float documentWidth = document.getPageSize().getWidth() - document.leftMargin() - document.rightMargin();
             float documentHeight = document.getPageSize().getHeight()- document.topMargin() - document.bottomMargin();
             img.scaleAbsolute(documentWidth,documentHeight);
+            img.setAbsolutePosition(0, 0);
+            document.newPage();
             document.add(img);
         }
+
         document.close();
+
     }
 
     public void pickImage() {
