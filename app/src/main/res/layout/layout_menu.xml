@@ -62,12 +62,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layout_export"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginBottom="6dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,8 +83,8 @@
 
             <LinearLayout
                 android:id="@+id/img_container"
-                android:layout_width="150dp"
-                android:layout_height="300dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
 
@@ -95,5 +95,6 @@
             android:layout_marginBottom="10dp"
             android:layout_weight="0.8"
             android:text="Export" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

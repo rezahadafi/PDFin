@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -30,10 +31,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.pdf.PdfName;
-import com.itextpdf.text.pdf.PdfNumber;
-import com.itextpdf.text.pdf.PdfPage;
-import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import androidx.annotation.NonNull;
@@ -56,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout.LayoutParams layoutParams;
     ArrayList<String> arr;
     String[] valuesarr;
+    LinearLayout layout_export;
+    int heightscreen;
+    int widthscreen;
 
     public static String DEST = "null";
 
@@ -64,10 +64,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_menu);
         layout = (LinearLayout) findViewById(R.id.img_container);
+        layout_export=(LinearLayout)findViewById(R.id.layout_export);
         arr=new ArrayList<String>();
         button = findViewById(R.id.button_capture);
         button_gallery=findViewById(R.id.button_gallery);
         button_rexport=findViewById(R.id.button_export);
+
+        layout_export.setVisibility(View.INVISIBLE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        heightscreen = displayMetrics.heightPixels;
+        widthscreen = displayMetrics.widthPixels;
+
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -107,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
     }
 
 
@@ -188,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 arr.add(imageFilePath);
                 valuesarr=new String[arr.size()];
                 valuesarr = arr.toArray(valuesarr);
-
+                layout_export.setVisibility(View.VISIBLE);
             }
             else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "You cancelled the operation", Toast.LENGTH_SHORT).show();
@@ -205,12 +215,13 @@ public class MainActivity extends AppCompatActivity {
             arr.add(picturePath);
             valuesarr=new String[arr.size()];
             valuesarr = arr.toArray(valuesarr);
+            layout_export.setVisibility(View.VISIBLE);
                 //InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
                 //Bitmap bmp= BitmapFactory.decodeStream(inputStream);
                 //imageView.setImageBitmap(bmp);
         }
         layout.removeAllViews();
-        layoutParams = new LinearLayout.LayoutParams(600, 800);
+        layoutParams = new LinearLayout.LayoutParams(widthscreen/2,heightscreen/3);
         Log.d("size",String.valueOf(arr.size()));
         for (int i = 0; i < valuesarr.length; i++) {
 
@@ -223,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setImageURI(Uri.parse(valuesarr[i].toString()));
             layout.addView(imageView);
-
         }
     }
 
